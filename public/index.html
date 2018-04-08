@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tree View App</title>
+  <link rel="stylesheet" type="text/css" href="/assets/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+  <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js"></script> -->
+</head>
+<body>
+
+  <h1>Tree View Fun <i class="fa fa-leaf"></i></h1>
+
+    <h3 id="explain" title="Create a new branch to find out!">What does this thing do?</h3>
+
+  <div class="branch-name container">
+    <form id="nameForm">
+      <input type="text" name="branches" id="branchNameInput" value="" placeholder="Enter a branch name" onkeyup="validateInput(this)" required="" />
+      <button type="submit" id="branchNameSubmit" class="branch-name btn">Enter</button>
+    </form>
+  </div>
+
+  <div class="tree-container">
+    <div id="tree">
+      <h2 id="branchName" onclick="getBranches()"></h2>
+
+      <div id="userInputPrompt" style="display: none;">
+          <div class="row heading">About This Branch</div>
+          <div class="row">
+            <input id="editBranchName" class="branch-form" onkeyup="validateInput(this)" required="" readonly="" value="branch1">
+            <!-- Edit Branch Name -->
+            <button id="editBranchNameIcon" class="branch-form name-edit" onclick="editItem(this)"><i class="fa fa-edit"></i></button>
+            <!-- Cancel Edits -->
+            <button id="cancelBranchNameIcon" class="branch-form name-edit" onclick="cancelItem(this)"><i class="fa fa-close"></i></button>
+            <!-- Delete Branch -->
+            <button id="deleteBranchNameIcon" class="branch-form name-edit" onclick="deleteItem(this)"><i class="fa fa-trash-o"></i></button>
+          </div>
+          <!-- other junk -->
+          <div class="row">
+            <input id="childNum" class="branch-form children-input" required="" value="5" data-toggle="tooltip" title="Please enter a number between 1 and 15"  type="number" min="0" max="15" placeholder="# of Leaves">
+          </div>
+          <div class="row input">
+            <div class="range">Range</div>
+            <input type="number" id="rangeMin" class="branch-form" data-toggle="tooltip" title="Enter a minimum value less than the maximum value" placeholder="Min" value="14" required="">
+            <input type="number" id="rangeMax" class="branch-form" data-toggle="tooltip" title="Enter an minimum value greater than the maximum value" placeholder="Max" value="100" required="">
+            <button id="branchSubmit" onclick="submitBranchEdit(this)" class="btn btn-block submitBranch">ENTER</button>
+          </div>
+        </div>
+
+
+      <ul id="branches">
+      </ul>
+
+    </div>
+  </div>
+
+  <script src="/jquery/dist/jquery.js"></script>
+  <script src="/socket.io/socket.io.js"></script>
+
+  <script>  
+   var socket = io.connect();
+   socket.on('connect', function(data) {
+      socket.emit('join', 'hi');
+   });
+   socket.on('broad', function(data) {
+           $('#branchName').append(data+ "<br/>");
+     });
+
+   $('form').submit(function(e){
+       e.preventDefault();
+       var message = $('#branchNameInput').val();
+       socket.emit('messages', message);
+   });
+  </script>
+
+  <script src="/assets/treeview.js"></script>
+</body>
+</html>
